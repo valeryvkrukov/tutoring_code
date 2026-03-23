@@ -76,7 +76,7 @@
 								<div class="row">
 									<div class="col-md-12">
 										<div class="form-group">
-											<p>{!! $faq->description !!}</p>
+											<p>{{ $faq->description ?? 'No description available.' }}</p>
 										</div>
 									</div>
 								</div>

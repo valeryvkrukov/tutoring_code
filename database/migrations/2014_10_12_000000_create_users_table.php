@@ -25,6 +25,8 @@ class CreateUsersTable extends Migration
             $table->string('city',50)->nullable();
             $table->string('state',50)->nullable();
             $table->string('zip',20)->nullable();
+            // fix #2: time_zone field added
+            $table->string('time_zone',50)->nullable();
             $table->enum('status', ['inactive','active']);
             $table->bigInteger('phone')->nullable();
             $table->string('image')->nullable();

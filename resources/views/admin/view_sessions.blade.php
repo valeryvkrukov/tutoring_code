@@ -266,13 +266,13 @@ $s_app = Session()->get('sessionsSearch');
                         <label>Search By</label>
                         <select class="form-control select2" name="searchBy">
                           @foreach($searchBy as $x => $y)
-                          <option value="{{ $x }}" {{ $x == $s_app['searchBy'] ? 'selected="selected"' : '' }}>{{ $y }}</option>
+                          <option value="{{ $x }}" {{ is_array($s_app) && $x == $s_app['searchBy'] ? 'selected="selected"' : '' }}>{{ $y }}</option>
                           @endforeach
                         </select>
                       </div>
                       <div class="col-md-4">
                         <label>Search String</label>
-                        <input type="text" class="form-control" name="search" placeholder="Type here ..." value="{{ $s_app['search'] }}" style="line-height: 2;">
+                        <input type="text" class="form-control" name="search" placeholder="Type here ..." value="{{ is_array($s_app) ?? $s_app['search'] }}" style="line-height: 2;">
                       </div>
                       <div class="col-md-4" style="margin-top: -8px;">
                         <label style="display: block;">&nbsp;</label>

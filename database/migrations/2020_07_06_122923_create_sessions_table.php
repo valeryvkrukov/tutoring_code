@@ -20,6 +20,8 @@ class CreateSessionsTable extends Migration
             $table->integer('user_id');
             $table->string('subject');
             $table->string('duration');
+            // fix #3: date field added
+            $table->date('date');
             $table->string('time');
             $table->string('location');
             $table->enum('session_type', ['First Session', 'Session Before']);

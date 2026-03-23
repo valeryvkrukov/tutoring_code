@@ -35,15 +35,22 @@
     @include('frontend.includes.header')
     	@yield('content')
     @include('frontend.includes.footer')
+
+    <!-- fix #1 jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ asset('frontend-assets/bootstrap/js/popper.min.js') }}"></script>
+    <script src="{{ asset('frontend-assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/superfish/1.7.10/js/superfish.min.js"></script>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <!--script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="{{asset('frontend-assets/bootstrap/js/popper.min.js')}}" integrity="" crossorigin="anonymous"></script>
     <script src="{{asset('frontend-assets/bootstrap/js/bootstrap.min.js')}}" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/superfish/1.7.10/js/superfish.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/superfish/1.7.10/js/superfish.min.js"></script-->
     <!-- Custom Script -->
     <script src="{{ asset('/frontend-assets/js/script.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('/frontend-assets/js/jquery.min.js') }}"></script>
+    <!--script type="text/javascript" src="{{ asset('/frontend-assets/js/jquery.min.js') }}"></script-->
     @yield('script')
     <script>
         var current = location.pathname;
