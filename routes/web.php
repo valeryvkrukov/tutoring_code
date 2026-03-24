@@ -73,7 +73,13 @@ Route::group(['prefix' => 'user-portal'], function () {
   });
 });
 /////////////////////////////// Admin //////////////////////////////
-Route::match(['get','post'],'/admin/login', 'Admin\AdminController@admin_login');
+// Route::match(['get','post'],'/admin/login', 'Admin\AdminController@admin_login');
+
+// fixed admin login route to use GET for form display and POST for submission
+Route::get('admin/login', 'Admin\LoginController@showLoginForm')->name('admin.login');
+Route::post('admin/login', 'Admin\LoginController@login');
+Route::post('admin/logout', 'Admin\LoginController@logout')->name('admin.logout');
+
 Route::group(['middleware' => ['auth'=>'admin']], function () {
 Route::group(['prefix' => 'dashboard'], function () {
 	Route::get('/', function(){

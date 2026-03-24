@@ -17,8 +17,10 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard)->check()) {
-            return redirect('/home');
+        if (auth()->guard($guard)->check()) {
+            $url = auth()->user()->isAdmin() ? '/dashboard/view_sessions' : '/user-portal/dashboard';
+
+            return redirect($url);
         }
 
         return $next($request);

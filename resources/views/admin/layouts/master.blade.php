@@ -57,6 +57,9 @@
 
     @yield('page-footer')
 
+    <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
 
 
     <!--   Core JS Files   -->

@@ -15,11 +15,17 @@ class Admin
      */
     public function handle($request, Closure $next)
     {
-        // if (Auth::check() && Auth::user()->isRole()=='admin') {
-        if ($request->session()->exists('sct_admin')) {
-          return $next($request);
-        }else {
-          return redirect('/admin/login');
+        // check if user is authenticated and has admin role
+        if (auth()->check() && auth()->user()->isAdmin()) {
+            return $next($request);
         }
+
+        // if temporary solution for 'sct_admin' session is still in place, check it as well
+        if (session()->has('sct_admin')) {
+            return $next($request);
+        }
+
+        // if not authenticated or not an admin, redirect to admin login page
+        return redirect()->guest('admin/login');
     }
 }

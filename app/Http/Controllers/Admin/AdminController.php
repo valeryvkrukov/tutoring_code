@@ -64,49 +64,42 @@ class AdminController extends Controller
     //   return view('admin.login-page');
     // }
 
-    public function admin_login(Request $request)
-   {
+    public function admin_login(Request $request) {
         if ($request->session()->exists('sct_admin')) {
-           return redirect('/dashboard/view_sessions');
-       }
-
-
-   if($request->isMethod('post')){
-
-          $email = $request->input('email');
-           // $password = Hash::make(trim($request->input('password')));
-           $password = trim($request->input('password'));
-           // dd($password);
-     $user = $this->doLogin($email,$password);
-     if($user == 'invalid'){
-       $request->session()->flash('loginAlert', 'Invalid Email & Password');
-
-         return redirect('admin/login');
-
-     }elseif ($user == 'inactive') {
-       $request->session()->flash('loginAlert', 'Your account has been disabled by an administrator');
-       return redirect('admin/login');
-     }
-     else{
-
-       $request->session()->put('sct_admin', $user);
-
-
-
-         return redirect('dashboard/view_sessions');
-
-     }
-
-
-   }
-       return view('/admin.login-page');
-   }
-
-   public function doLogin($email,$password){
+            return redirect('/dashboard/view_sessions');
+        }
+        
+        if($request->isMethod('post')){
+            $email = $request->input('email');
+            // $password = Hash::make(trim($request->input('password')));
+            $password = trim($request->input('password'));
+            // dd($password);
+            $user = $this->doLogin($email,$password);
+            
+            if ($user == 'invalid') {
+                $request->session()->flash('loginAlert', 'Invalid Email & Password');
+                
+                return redirect('admin/login');
+            } elseif ($user == 'inactive') {
+                $request->session()->flash('loginAlert', 'Your account has been disabled by an administrator');
+                
+                return redirect('admin/login');
+            } else {
+                $request->session()->put('sct_admin', $user);
+                
+                return redirect('dashboard/view_sessions');
+            }
+        }
+        
+        return view('/admin.login-page');
+    }
+    
+    public function doLogin($email,$password) {
        /* do login */
        // dd($password);
        $check_user = DB::table('users')->where('email','=',$email)->where('role','admin')->where('status','inactive')->first();
        $user = DB::table('users')->where('email','=',$email)->where('role','admin')->first();
+
        if(empty($user)){
            return 'invalid';
        }else{

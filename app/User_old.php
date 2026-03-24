@@ -7,7 +7,7 @@ use Laravel\Cashier\Billable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Student;
-class User extends Authenticatable
+class User_old extends Authenticatable
 {
     use Notifiable, Billable;
 

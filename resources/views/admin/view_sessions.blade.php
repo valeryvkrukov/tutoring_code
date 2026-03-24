@@ -90,7 +90,7 @@ $s_app = Session()->get('sessionsSearch');
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="{{ url('dashboard/logout') }}">Logout</a>
+                  <a class="dropdown-item" href="{{ route('admin.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                 </div>
               </li>
 
