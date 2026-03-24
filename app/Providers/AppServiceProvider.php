@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
      public function boot()
      {
-       if (Session::get('sct_admin') == null) {
+       if (auth()->user() == null) {
          if (Session::get('loginSession') == null) {
            return redirect('/login');
          }

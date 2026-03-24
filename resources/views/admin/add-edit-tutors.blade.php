@@ -96,13 +96,13 @@ label {
 
               <li class="nav-item btn-rotate dropdown">
                 <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {{Session::get('sct_admin')->first_name}}
+                {{ auth()->user()->first_name }}
                   <p>
                     <span class="d-lg-none d-md-block">Some Actions</span>
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="{{ url('dashboard/logout') }}">Logout</a>
+                  <a href="#" class="logout-link dropdown-item">Logout</a>
                 </div>
               </li>
 

@@ -114,7 +114,18 @@
             .then(response => response.json())
             .then(data => console.log('Ping status:', data.status));
       }, 60000);
-
+    </script>
+    <script>
+        // Logout link click handler
+        document.addEventListener('DOMContentLoaded', function () {
+            const logoutLinks = document.querySelectorAll('.logout-link');
+            logoutLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.getElementById('logout-form').submit();
+                });
+            });
+        });
     </script>
   </body>
 </html>

@@ -40,7 +40,7 @@ class LoginController extends Controller
             $user = Auth::user();
 
             // temporary
-            session(['sct_admin' => $user]); 
+            //session(['sct_admin' => $user]); 
 
             if ($user->status === 'inactive') {
                 Auth::logout();

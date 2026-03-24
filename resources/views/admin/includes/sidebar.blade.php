@@ -161,7 +161,7 @@
               <li><a href="{{url('')}}">Customer Messages</a></li>
             </ul>
           </li> -->
-           @if(Session::get('sct_admin')->role =='admin')
+           @if(auth()->user()->isAdmin())
            <!-- <li>
              <a href="#managepayment"  data-toggle="collapse"  role="button" aria-expanded="false" aria-controls="manageJobs">
                <i class="nc-icon nc-single-02"></i>
@@ -173,7 +173,7 @@
 
            </li> -->
           @endif
-           @if(Session::get('sct_admin')->role =='admin')
+           @if(auth()->user()->isAdmin())
           <!-- <li>
             <a href="{{url('dashboard/help-menu')}}">
               <i class="nc-icon nc-single-02"></i>

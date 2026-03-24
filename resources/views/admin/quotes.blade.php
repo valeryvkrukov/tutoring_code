@@ -32,7 +32,7 @@
                 </p>
               </a>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                <a class="dropdown-item" href="{{ url('dashboard/logout') }}">Logout</a>
+                <a href="#" class="logout-link dropdown-item">Logout</a>
               </div>
             </li>
             

@@ -64,8 +64,8 @@ class AdminController extends Controller
     //   return view('admin.login-page');
     // }
 
-    public function admin_login(Request $request) {
-        if ($request->session()->exists('sct_admin')) {
+    /*public function admin_login(Request $request) {
+        if (auth()->id()) {
             return redirect('/dashboard/view_sessions');
         }
         
@@ -92,10 +92,10 @@ class AdminController extends Controller
         }
         
         return view('/admin.login-page');
-    }
+    }*/
     
-    public function doLogin($email,$password) {
-       /* do login */
+    /*public function doLogin($email,$password) {
+       /* do login *
        // dd($password);
        $check_user = DB::table('users')->where('email','=',$email)->where('role','admin')->where('status','inactive')->first();
        $user = DB::table('users')->where('email','=',$email)->where('role','admin')->first();
@@ -112,15 +112,15 @@ class AdminController extends Controller
            return $user;
          }
        }
-   /* end */
- }
+   /* end *
+ }*/
 
- public function logout(Request $request){
+ /*public function logout(Request $request){
       // Session::flush();
       Session::forget('sct_admin');
        // Auth::logout();
        return redirect('admin/login');
- }
+ }*/
 
 
     public function all_admin(Request $request)
@@ -204,8 +204,8 @@ class AdminController extends Controller
     public function all_customers(Request $request)
     {
       // dd($request->all());
-      $app = session()->get('sct_admin');
-      if ($app =="") {
+      //$app = session()->get('sct_admin');
+      if (!auth()->user()->isAdmin()) {
         return redirect('/admin');
       }
     	if($request->isMethod('post')){
@@ -444,8 +444,8 @@ class AdminController extends Controller
     public function all_students(Request $request)
     {
       // dd($request->all());
-      $app = session()->get('sct_admin');
-      if ($app =="") {
+      //$app = session()->get('sct_admin');
+      if (!auth()->user()->isAdmin()) {
         return redirect('/admin');
       }
       if($request->isMethod('post')){
@@ -903,8 +903,8 @@ class AdminController extends Controller
 
     public function AdminSessions(Request $request)
     {
-      $app = session()->get('sct_admin');
-      if ($app =="") {
+      //$app = session()->get('sct_admin');
+      if (!auth()->user()->isAdmin()) {
         return redirect('/admin');
       }
       if($request->isMethod('post')){
@@ -1608,8 +1608,8 @@ class AdminController extends Controller
 
     public function AdminTimesheets(Request $request)
     {
-      $app = session()->get('sct_admin');
-      if ($app =="") {
+      //$app = session()->get('sct_admin');
+      if (!auth()->user()->isAdmin()) {
         return redirect('/admin');
       }
       if($request->isMethod('post')){
@@ -1915,8 +1915,8 @@ class AdminController extends Controller
 
     public function AdminReports(Request $request)
     {
-      $app = session()->get('sct_admin');
-      if ($app =="") {
+      //$app = session()->get('sct_admin');
+      if (!auth()->user()->isAdmin()) {
         return redirect('/admin');
       }
       if($request->isMethod('post')){

@@ -84,13 +84,13 @@ $s_app = Session()->get('sessionsSearch');
 
               <li class="nav-item btn-rotate dropdown">
                 <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  {{Session::get('sct_admin')->first_name}}
+                  {{ auth()->user()->first_name }}
                   <p>
                     <span class="d-lg-none d-md-block">Some Actions</span>
                   </p>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="{{ route('admin.logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                  <a href="#" class="logout-link dropdown-item">Logout</a>
                 </div>
               </li>
 
@@ -166,7 +166,7 @@ $s_app = Session()->get('sessionsSearch');
                       // Added By Admin
                       if ($session->added_by == 'Admin') {
                         $tutor_timezone = $session->admin_timezone;
-                        $admin_timezone = Session::get('sct_admin')->time_zone;
+                        $admin_timezone = auth()->user()->time_zone;
                         // Check session time zone and admin time zone
                         if ($tutor_timezone == $admin_timezone) {
                           $time = date('h:i a', strtotime($session->time));
@@ -208,7 +208,7 @@ $s_app = Session()->get('sessionsSearch');
                         }
                       }else {
                         // Added by Tutor
-                        $tutor_timezone = Session::get('sct_admin')->time_zone;
+                        $tutor_timezone = auth()->user()->time_zone;
                       if ($tutor_timezone == 'Pacific Time') {
                         date_default_timezone_set("America/Los_Angeles");
                       }elseif ($tutor_timezone == 'Mountain Time') {
