@@ -98,5 +98,20 @@
       }
     </script>
     @yield('script')
+    <script>
+        // session keep-alive ping
+        setInterval(function() {
+            fetch('{{ url("/ping-session") }}', {
+                method: 'GET',
+                credentials: 'include', // include cookies for session
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => console.log('Ping status:', data.status));
+      }, 60000);
+
+    </script>
   </body>
 </html>

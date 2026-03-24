@@ -27,11 +27,11 @@
                     {{ csrf_field() }}
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input class="form-control" name="email" autocomplete="off" data-msg-required="Please enter your username / email." required>
+                        <input class="form-control" id="email" name="email" autocomplete="off" data-msg-required="Please enter your username / email." required>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input id="password" class="form-control" type="password" name="password" minlength="6" data-msg-minlength="Password must be 6 characters or more." data-msg-required="Please enter your password." required>
+                        <input class="form-control" id="password" type="password" name="password" minlength="6" data-msg-minlength="Password must be 6 characters or more." data-msg-required="Please enter your password." required>
                     </div>
                     <!-- <div class="form-group">
                         <label class="custom-control custom-control-primary custom-checkbox">
@@ -47,8 +47,8 @@
             </div>
         </div>
     </div>
-    <script src="{{ asset('admin-assets/js/vendor.min.js') }}"></script>
-    <script src="{{ asset('admin-assets/js/elephant.min.js') }}"></script>
+    <!--script src="{{ asset('admin-assets/js/vendor.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/js/elephant.min.js') }}"></script-->
     <script>
     </script>
 </body>

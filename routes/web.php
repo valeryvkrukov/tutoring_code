@@ -142,3 +142,12 @@ Route::match(['get','post'],'/tutor_reports_ajax', 'Admin\AdminController@tutorR
 });
 
 Route::get('/check_initialSession/{id}/{id2}', 'frontend\DashboardController@CheckInitialSession');
+
+// fix for session timeout
+// Out of middleware('auth')
+Route::get('/ping-session', function () {
+    if (auth()->check()) {
+        return response()->json(['status' => 'alive', 'user' => auth()->id()]);
+    }
+    return response()->json(['status' => 'guest'], 200); // 200 OK for guests, not 401 Unauthorized
+});
