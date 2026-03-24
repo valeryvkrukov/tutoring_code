@@ -99,7 +99,7 @@ $s_app = Session()->get('clientsSearch');
                       <th class="text-right">Action</th>
                     </thead>
                     <tbody>
-                    @foreach($all_customer as $customer)
+                    @foreach($customers as $customer)
                       <tr>
                         <td> {{$customer->first_name}} {{$customer->last_name}}</td>
                         <!-- <td> {{$customer->role}}</td> -->
@@ -107,14 +107,20 @@ $s_app = Session()->get('clientsSearch');
                         <td class="text-right">
                           <a href="{{url('/dashboard/customer/edit/'.$customer->id)}}" data-toggle="tooltip" data-original-title="Update"><i class="fa fa-edit text-primary"></i></a>
                           <!-- <i class="fa fa-eye text-success"></i> -->
-                          <a href="javascript:0;" onclick="deleteEmployer('{{ $customer->id }}')"> <i class="fa fa-trash text-danger"></i> </a>
+                          <!-- a href="javascript:0;" onclick="deleteEmployer('{{ $customer->id }}')"> <i class="fa fa-trash text-danger"></i> </a-->
+                          <a href="#" 
+                              class="btn-delete" data-id="{{ $customer->id }}" 
+                              data-url="{{ route('admin.customer.delete', $customer->id) }}"
+                          >
+                              <i class="fa fa-trash text-danger"></i>
+                          </a>
                         </td>
                       </tr>
                       @endforeach
 
                     </tbody>
                   </table>
-                  {!! $all_customer->render() !!}
+                  {!! $customers->render() !!}
                 </div>
               </div>
             </div>

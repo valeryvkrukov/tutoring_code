@@ -61,7 +61,6 @@
         @csrf
     </form>
 
-
     <!--   Core JS Files   -->
     <script src="{{asset('/frontend-assets/dashboard/js/core/jquery.min.js')}}"></script>
     <script src="{{asset('/frontend-assets/dashboard/js/core/popper.min.js')}}"></script>
@@ -116,9 +115,29 @@
       }, 60000);
     </script>
     <script>
-        // Logout link click handler
+        // Logout and delete links click handler
         document.addEventListener('DOMContentLoaded', function () {
             const logoutLinks = document.querySelectorAll('.logout-link');
+            const deleteLinks = document.querySelectorAll('.btn-delete');
+            deleteLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    const id = this.getAttribute('data-id');
+                    const url = this.getAttribute('data-url');
+
+                    // ?TODO: Consider using a modal confirmation dialog instead of browser's confirm
+
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
+                    form.innerHTML = `
+                        @csrf
+                        @method('DELETE')
+                    `;
+                    document.body.appendChild(form);
+
+                    form.submit();
+                });
+            });
             logoutLinks.forEach(link => {
                 link.addEventListener('click', function (e) {
                     e.preventDefault();

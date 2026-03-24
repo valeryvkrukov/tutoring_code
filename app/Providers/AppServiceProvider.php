@@ -24,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
      public function boot()
      {
+        // Временно блокируем доступ к ключу в сессии
+if (session()->has('sct_admin')) {
+    dd('Нашел! Костыль sct_admin всё еще используется в коде.', session('sct_admin'));
+}
+
        if (auth()->user() == null) {
          if (Session::get('loginSession') == null) {
            return redirect('/login');

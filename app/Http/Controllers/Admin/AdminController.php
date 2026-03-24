@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Support\Facades\Auth;
+//use Illuminate\Support\Facades\Auth;
 use App\Facade\SCT;
-use App\User;
 use App\Student;
 use Hash;
 use DB;
@@ -17,121 +16,39 @@ use Storage;
 use Response;
 use DateTime;
 
+// Refactor related `use`'s
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Faq;
+//use App\Models\Agreement;
+//use App\Models\Credit;
+//use App\Models\SignedAgreement;
+
 class AdminController extends Controller
 {
-
     use AuthenticatesUsers;
+
     protected $redirectTo = '/dashboard';
-
-    // public function __construct()
-    // {
-    //     $this->middleware('admin')->except('logout');
-    // }
-
-    public function accountLogin(Request $request){
-       return view('frontend.login');
+    
+    // TODO: Refactor this function to use the default Laravel authentication system
+    public function accountLogin(Request $request) {
+        return view('frontend.login');
     }
-
-    public function username(){
+    
+    // TODO: Refactor this function to use the default Laravel authentication system
+    public function username() {
         return 'email';
     }
 
-    // public function admin_login(Request $request)
-    // {
-    // if($request->isMethod('post')){
-    //   // dd($request->all());
-    //   $this->validate($request, [
-    //     'email' => 'required',
-    //     'password' => 'required',
-    //   ]);
-    //
-    //   $user_data = array(
-    //     'email'  => $request->get('email'),
-    //     'password' => $request->get('password'),
-    //     'role' => 'admin'
-    //   );
-    //
-    //   if(!Auth::attempt($user_data)){
-    //     // $fNotice = 'Please check your mobile for verification code';
-    //     $request->session()->flash('loginAlert', 'Invalid Email & Password');
-    //     return redirect('admin/login');
-    //   }
-    //   if ( Auth::check() ) {
-    //     // dd(Auth::user());
-    //   }
-    //   return redirect('dashboard/view_customers');
-    //   }
-    //   return view('admin.login-page');
-    // }
-
-    /*public function admin_login(Request $request) {
-        if (auth()->id()) {
-            return redirect('/dashboard/view_sessions');
-        }
-        
-        if($request->isMethod('post')){
-            $email = $request->input('email');
-            // $password = Hash::make(trim($request->input('password')));
-            $password = trim($request->input('password'));
-            // dd($password);
-            $user = $this->doLogin($email,$password);
-            
-            if ($user == 'invalid') {
-                $request->session()->flash('loginAlert', 'Invalid Email & Password');
-                
-                return redirect('admin/login');
-            } elseif ($user == 'inactive') {
-                $request->session()->flash('loginAlert', 'Your account has been disabled by an administrator');
-                
-                return redirect('admin/login');
-            } else {
-                $request->session()->put('sct_admin', $user);
-                
-                return redirect('dashboard/view_sessions');
-            }
-        }
-        
-        return view('/admin.login-page');
-    }*/
-    
-    /*public function doLogin($email,$password) {
-       /* do login *
-       // dd($password);
-       $check_user = DB::table('users')->where('email','=',$email)->where('role','admin')->where('status','inactive')->first();
-       $user = DB::table('users')->where('email','=',$email)->where('role','admin')->first();
-
-       if(empty($user)){
-           return 'invalid';
-       }else{
-         if (!Hash::check($password, $user->password)) {
-           return 'invalid';
-         }elseif (!empty($check_user)) {
-           return 'inactive';
-         }else {
-           // dd($user);
-           return $user;
-         }
-       }
-   /* end *
- }*/
-
- /*public function logout(Request $request){
-      // Session::flush();
-      Session::forget('sct_admin');
-       // Auth::logout();
-       return redirect('admin/login');
- }*/
-
-
-    public function all_admin(Request $request)
-    {
-      $all_admin = User::where('role','admin')->orderBy('id','desc')->paginate(15);
-       return view('admin.view_admin',compact('all_admin'));
+    // TODO: Refactor this function to use the default Laravel authentication system
+    public function all_admin(Request $request) {
+        $all_admin = User::where('role', 'admin')->orderBy('id', 'desc')->paginate(15);
+        return view('admin.view_admin', compact('all_admin'));
     }
-
-    public function addEditAdmin(Request $request){
-      // dd($request->all());
-      $adminId = 0;
+    
+    // TODO: Refactor this function to use the default Laravel authentication system
+    public function addEditAdmin(Request $request) {
+        $adminId = 0;
         $rPath = $request->segment(3);
         if($request->isMethod('post')){
             $adminId = $request->input('admin_id');
@@ -190,51 +107,144 @@ class AdminController extends Controller
         }
     }
 
-    public function deleteAdmin(Request $request)
-    {
-      if($request->isMethod('delete')){
-    		$admin_id = trim($request->input('admin_id'));
-        $admin = User::find($admin_id);
-        $admin->delete();
-    		$request->session()->flash('message' , 'Admin Deleted Successfully');
-    	}
-    	return redirect(url()->previous());
+    // TODO: Refactor this function to use the default Laravel authentication system
+    public function deleteAdmin(Request $request) {
+        if ($request->isMethod('delete')) {
+            $admin_id = trim($request->input('admin_id'));
+            $admin = User::find($admin_id);
+            $admin->delete();
+            $request->session()->flash('message', 'Admin Deleted Successfully');
+        }
+        return redirect(url()->previous());
     }
 
-    public function all_customers(Request $request)
-    {
-      // dd($request->all());
-      //$app = session()->get('sct_admin');
-      if (!auth()->user()->isAdmin()) {
-        return redirect('/admin');
-      }
-    	if($request->isMethod('post')){
-    		$request->session()->put('clientsSearch',$request->all());
-    	}
+    /**
+     * List customers with optional search functionality.
+     * This function also paginates results and retains search parameters in pagination links.
+     */
+    public function listCustomers(Request $request) {
+        $query = User::where('role', 'customer')->orderBy('first_name', 'asc');
 
-    	if($request->input('reset') && $request->input('reset') == 'true'){
-    		$request->session()->forget('clientsSearch');
-    		return redirect('dashboard/view_customers');
-    	}
-      $s_app = $request->session()->get('clientsSearch');
-      if ($s_app ==null) {
-        $s_app=[];
-      }
-      // dd($s_app);
-    $all_customer = DB::table('users')->where('role','=','customer')
-                  ->where(function ($query) use ($s_app) {
-                      if(count($s_app) > 0){
-                          if($s_app['search'] != ''){
-                              $query->where($s_app['searchBy'], 'like', '%'.$s_app['search'].'%');
-                          }
-                      }
-                  })->orderBy('first_name','asc')->paginate(15);
+        if ($request->filled('search') && $request->filled('searchBy')) {
+            $query->where($request->searchBy, 'like', '%' . $request->search . '%');
+        }
 
-      return view('admin.view_customers',compact('all_customer'));
+        $customers = $query->paginate(15);
+        $customers->appends($request->all());
+
+        return view('admin.view_customers', compact('customers'));
     }
 
+    /**
+     * Add or edit a customer based on the presence of a customer_id in the request. 
+     * This function also handles credit updates and checks for sessions with insufficient credit.
+     */
+    public function addEditCustomer(CustomerRequest $request) {
+        $id = $request->input('customer_id');
 
-    public function addEditCustomer(Request $request){
+        $customer = User::findOrNew($id);
+        $customer->fill($request->only([
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'address',
+            'city',
+            'state',
+            'zip',
+        ]));
+        $customer->role = 'customer';
+        $customer->status = 'active';
+        $customer->automated_email = $request->has('automated_email') ? 'Subscribe' : 'Unsubscribe';
+        
+        if ($request->filled('password')) {
+            $customer->password = Hash::make(trim($request->input('password')));
+        }
+
+        $customer->save();
+
+        // Handle credits separately to keep the customer saving logic clean
+        $this->handleCredits($customer, $request);
+
+        // Consider moving this logic to a service class if it becomes more complex
+        $this->checkInsufficientSessions($customer);
+
+        return redirect()->back()->with('sMsg', $id ? 'Customer Updated' : 'New Customer Added');
+    }
+
+    /**
+     * Delete a customer by ID. 
+     * This function also ensures that any related sessions or credits are handled appropriately.
+     */
+    public function deleteCustomer($id)
+    {
+        $customer = User::findOrFail($id);
+        $customer->delete();
+
+        return back()->with('message', 'Customer Deleted Successfully');
+    }
+
+    protected function checkInsufficientSessions(User $customer) {
+        $sessions = Session::where('user_id', $customer->id)
+            ->where('status', 'Insufficient Credit')
+            ->get();
+        
+        foreach ($sessions as $session) {
+            $startTime = Carbon::parse($session->date . ' ' . $session->time);
+
+            list($hours, $minutes) = explode(':', $session->duration);
+            $totalMinutes = ($hours * 60) + $minutes;
+            $endTime = $startTime->copy()->addMinutes($totalMinutes);
+
+            $hasConflict = Session::where('tutor_id', $session->tutor_id)
+                ->where('date', $session->date)
+                ->where('status', 'Confirm')
+                ->where(function ($query) use ($startTime, $endTime) {
+                    $query->whereBetween('time', [$startTime->format('H:i:s'), $endTime->format('H:i:s')])
+                        ->orWhereRaw(
+                            '? BETWEEN time AND ADDTIME(time, SEC_TO_TIME(TIME_TO_SEC(duration)))', 
+                            [$startTime->format('H:i:s')]
+                        );
+                })
+                ->exists();
+
+            $session->update(['status' => $hasConflict ? 'Cancel' : 'Confirm']);
+        }
+    }
+
+    /**
+     * Handle credit creation or update for a customer.
+     */
+    private function handleCredits(User $user, $request) {
+        if (!$request->filled('credit_cost')) return;
+
+        $credit = Credit::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'credit_cost' => $request->input('credit_cost'),
+                'credit_balance' => $request->input('credit_balance'),
+            ]
+        );
+
+        if ($credit->credit_balance <= 0) {
+            $this->sendCreditEmail($user, $credit_balance, 'mail.end_credits_email');
+        } elseif ($credit_balance == 0.5) {
+            $this->sendCreditEmail($user, $credit_balance, 'mail.half_hour_credits_email');
+        }
+    }
+
+    /**
+     * Send an email to the user regarding their credit balance using the specified template.
+     */
+    protected function sendCreditEmail($user, $balance, $template) {
+        \Mail::send($template, ['user' => $user, 'credit_balance' => $balance], function ($message) use ($user) {
+            $message->subject('Smart Cookie Tutors - Credit Balance')
+                ->from('portal@smartcookietutors.com', 'Smart Cookie Tutors')
+                ->to($user->email);
+        });
+    }
+
+    /*public function addEditCustomer(Request $request) {
       // dd($request->all());
       $customerId = 0;
         $rPath = $request->segment(3);
@@ -428,112 +438,103 @@ class AdminController extends Controller
             }
             return view('admin.add-edit-customers',compact('customer','rPath','customerId','credit'));
         }
-    }
+    }*/
 
-    public function deleteCustomer(Request $request)
-    {
-      if($request->isMethod('delete')){
-        $customer_id = trim($request->input('customer_id'));
-        $customer = User::find($customer_id);
-        $customer->delete();
-        $request->session()->flash('message' , 'Customer Deleted Successfully');
-      }
-      return redirect(url()->previous());
-    }
-
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function all_students(Request $request)
     {
-      // dd($request->all());
-      //$app = session()->get('sct_admin');
-      if (!auth()->user()->isAdmin()) {
-        return redirect('/admin');
-      }
-      if($request->isMethod('post')){
-        $request->session()->put('studentsSearch',$request->all());
-      }
+          // dd($request->all());
+          //$app = session()->get('sct_admin');
+          if (!auth()->user()->isAdmin()) {
+            return redirect('/admin');
+          }
+          if($request->isMethod('post')){
+            $request->session()->put('studentsSearch',$request->all());
+          }
 
-      if($request->input('reset') && $request->input('reset') == 'true'){
-        $request->session()->forget('studentsSearch');
-        return redirect('dashboard/view_students');
-      }
-      $s_app = $request->session()->get('studentsSearch');
-      if ($s_app ==null) {
-        $s_app=[];
-      }
-      // dd($s_app);
-      $type ='';
-      $all_client='';
-      $all_student='';
-    if ($s_app ==[] ) {
-      $type ='client_search';
-      $all_client = DB::table('users')->where('role','=','customer')
-                    ->where(function ($query) use ($s_app) {
-                        if(count($s_app) > 0){
-                            if($s_app['search'] != ''){
-                                $query->where($s_app['searchBy'], 'like', '%'.$s_app['search'].'%');
-                            }
-                        }
-                    })->orderBy('first_name','asc')->paginate(15);
-
-                    foreach ($all_client as &$student) {
-                      $student->student=DB::table('students')->where('user_id','=',$student->id)
-                      ->where(function ($query) use ($s_app) {
-                          if(count($s_app) > 0){
-                              if($s_app['search'] != ''){
-                                  $query->where($s_app['searchBy'], 'like', '%'.$s_app['search'].'%');
-                              }
-                          }
-                      })->orderBy('student_name','asc')->get();
-                    }
-
-    }
-		elseif($s_app['searchBy']=='first_name' or $s_app['searchBy']=='last_name') {
-			$type ='client_search';
-			$all_client = DB::table('users')->where('role','=','customer')
-					  ->where(function ($query) use ($s_app) {
-						  if(count($s_app) > 0){
-							  if($s_app['search'] != ''){
-								  $query->where($s_app['searchBy'], 'like', '%'.$s_app['search'].'%');
-							  }
-						  }
-					  })->orderBy('first_name','asc')->paginate(15);
-
-			foreach ($all_client as &$student) {
-				$student->student=DB::table('students')->where('user_id','=',$student->id)
-				->orderBy('student_name','asc')->get();
-			}
-        }
-		
-		elseif($s_app['searchBy']=='tutor_first_name' or $s_app['searchBy']=='tutor_last_name') {
-			$type='student_search';
-			
-			$all_student = DB::table('students')
-						->join('tutor_assign', 'students.student_id', '=', 'tutor_assign.student_id')
-						->join('users', 'tutor_assign.tutor_id', '=', 'users.id')
-                        ->where(function ($query) use ($s_app) {
-                            if(count($s_app) > 0){
-                                if($s_app['search'] != ''){
-                                    $query->where(substr($s_app['searchBy'],6), 'like', '%'.$s_app['search'].'%');
-                                }
-                            }
-                        })->orderBy('student_name','asc')->paginate(15);
-		}
-		
-		else {
-			$type='student_search';
-			$all_student = DB::table('students')
+          if($request->input('reset') && $request->input('reset') == 'true'){
+            $request->session()->forget('studentsSearch');
+            return redirect('dashboard/view_students');
+          }
+          $s_app = $request->session()->get('studentsSearch');
+          if ($s_app ==null) {
+            $s_app=[];
+          }
+          // dd($s_app);
+          $type ='';
+          $all_client='';
+          $all_student='';
+        if ($s_app ==[] ) {
+          $type ='client_search';
+          $all_client = DB::table('users')->where('role','=','customer')
                         ->where(function ($query) use ($s_app) {
                             if(count($s_app) > 0){
                                 if($s_app['search'] != ''){
                                     $query->where($s_app['searchBy'], 'like', '%'.$s_app['search'].'%');
                                 }
                             }
-                        })->orderBy('student_name','asc')->paginate(15);
+                        })->orderBy('first_name','asc')->paginate(15);
+
+                        foreach ($all_client as &$student) {
+                          $student->student=DB::table('students')->where('user_id','=',$student->id)
+                          ->where(function ($query) use ($s_app) {
+                              if(count($s_app) > 0){
+                                  if($s_app['search'] != ''){
+                                      $query->where($s_app['searchBy'], 'like', '%'.$s_app['search'].'%');
+                                  }
+                              }
+                          })->orderBy('student_name','asc')->get();
+                        }
+
         }
+        elseif($s_app['searchBy']=='first_name' or $s_app['searchBy']=='last_name') {
+          $type ='client_search';
+          $all_client = DB::table('users')->where('role','=','customer')
+                ->where(function ($query) use ($s_app) {
+                  if(count($s_app) > 0){
+                    if($s_app['search'] != ''){
+                      $query->where($s_app['searchBy'], 'like', '%'.$s_app['search'].'%');
+                    }
+                  }
+                })->orderBy('first_name','asc')->paginate(15);
+
+          foreach ($all_client as &$student) {
+            $student->student=DB::table('students')->where('user_id','=',$student->id)
+            ->orderBy('student_name','asc')->get();
+          }
+            }
+        
+        elseif($s_app['searchBy']=='tutor_first_name' or $s_app['searchBy']=='tutor_last_name') {
+          $type='student_search';
+          
+          $all_student = DB::table('students')
+                ->join('tutor_assign', 'students.student_id', '=', 'tutor_assign.student_id')
+                ->join('users', 'tutor_assign.tutor_id', '=', 'users.id')
+                            ->where(function ($query) use ($s_app) {
+                                if(count($s_app) > 0){
+                                    if($s_app['search'] != ''){
+                                        $query->where(substr($s_app['searchBy'],6), 'like', '%'.$s_app['search'].'%');
+                                    }
+                                }
+                            })->orderBy('student_name','asc')->paginate(15);
+        }
+        
+        else {
+          $type='student_search';
+          $all_student = DB::table('students')
+                            ->where(function ($query) use ($s_app) {
+                                if(count($s_app) > 0){
+                                    if($s_app['search'] != ''){
+                                        $query->where($s_app['searchBy'], 'like', '%'.$s_app['search'].'%');
+                                    }
+                                }
+                            })->orderBy('student_name','asc')->paginate(15);
+            }
 
        return view('admin.view_students',compact('all_client','all_student','type'));
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function addEditStudent(Request $request){
       // dd($request->all());
       $studentId = 0;
@@ -596,6 +597,7 @@ class AdminController extends Controller
         }
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function deleteStudent(Request $request)
     {
       if($request->isMethod('delete')){
@@ -607,12 +609,14 @@ class AdminController extends Controller
       return redirect(url()->previous());
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function all_tutors(Request $request)
     {
       $all_tutor = User::where('role','<>','customer')->orderBy('first_name','asc')->paginate(15);
        return view('admin.view_teachers',compact('all_tutor'));
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function addEditTutor(Request $request){
       // dd($request->all());
       $tutorId = 0;
@@ -693,6 +697,7 @@ class AdminController extends Controller
         }
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function deleteTutor(Request $request)
     {
       if($request->isMethod('delete')){
@@ -704,23 +709,28 @@ class AdminController extends Controller
       return redirect(url()->previous());
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function all_agreement(Request $request)
     {
       $all_agreement = DB::table('aggreements')->orderBy('aggreement_id','desc')->paginate(15);
        return view('admin.view_aggreements',compact('all_agreement'));
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function awaiting_signature_agreements(Request $request)
     {
       $pending_agreement = DB::table('signed_aggreements')->where('status','Awaiting Signature')->orderBy('signed_id','desc')->paginate(15);
        return view('admin.pending_aggreements',compact('pending_agreement'));
     }
+
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function signed_agreements(Request $request)
     {
       $signed_agreement = DB::table('signed_aggreements')->where('status','Signed')->orderBy('signed_id','desc')->paginate(15);
        return view('admin.signed_aggreements',compact('signed_agreement'));
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function deletePendingAgreement(Request $request)
     {
       if($request->isMethod('delete')){
@@ -731,7 +741,7 @@ class AdminController extends Controller
       return redirect(url()->previous());
     }
 
-
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function addEditAgreement(Request $request){
       // dd($request->all());
       $agreementId = 0;
@@ -788,6 +798,7 @@ class AdminController extends Controller
         }
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function showAgreement(Request $request ,$id)
     {
        // dd('hello');
@@ -805,6 +816,7 @@ class AdminController extends Controller
         ]);
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function deleteAgreement(Request $request)
     {
       if($request->isMethod('delete')){
@@ -815,6 +827,7 @@ class AdminController extends Controller
       return redirect(url()->previous());
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function getUserList(Request $request,$id)
     {
       $clients = User::where('role','customer')->orderBy('first_name','asc')->get();
@@ -822,6 +835,7 @@ class AdminController extends Controller
       return view('admin.ajax-users-list',compact('clients','tutors','id'));
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function sendAgreement(Request $request,$agreement_id,$user_id)
     {
       $get_agreement = DB::table('aggreements')->where('aggreement_id',$agreement_id)->first();
@@ -849,7 +863,7 @@ class AdminController extends Controller
     echo $send;
   }
 
-
+  // TODO: Refactor this function to use the default Laravel authentication system
     public function addEditFAQ(Request $request){
       // dd($request->all());
       $faqId = 0;
@@ -876,12 +890,14 @@ class AdminController extends Controller
         }
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function getTutorList(Request $request,$id)
     {
       $tutors = User::where('role','<>','customer')->orderBy('id','desc')->get();
       return view('admin.ajax-tutors-list',compact('tutors','id'));
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function AssignTutor(Request $request)
     {
       $student_id = $request->input('student_id');
@@ -895,11 +911,13 @@ class AdminController extends Controller
       echo $assign;
     }
 
+    // TODO: Refactor this function to use the default Laravel authentication system
     public function DeleteAssignTutor(Request $request, $id, $tutor_id)
     {
       $unassign = DB::table('tutor_assign')->where('student_id',$id)->where('tutor_id',$tutor_id)->delete();
       echo $unassign;
     }
+
 
     public function AdminSessions(Request $request)
     {
